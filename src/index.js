@@ -6,8 +6,10 @@ function Square(props){
 
 	return (
 			<button
-				className="square"
+				className={props.hover ? "hover square" : "square"}
 				onClick={() => props.onClick()}
+				onMouseEnter={() => props.onSquareMouseEnter()}
+				onMouseLeave ={() => props.onSquareMouseLeave()}
 			>
 				{props.value}
 			</button>
@@ -23,6 +25,9 @@ class Board extends React.Component {
 		return <Square
 			value={this.props.squares[i]}
 			onClick={() => this.props.onClick(i)}
+			onSquareMouseEnter={() => this.props.onSquareMouseEnter(i)}
+			onSquareMouseLeave={() => this.props.onSquareMouseLeave(i)}
+			hover={this.props.hoveringSquareIndex === i}
 		/>;
 	}
 
@@ -84,10 +89,54 @@ class Game extends React.Component {
 				squares: squares,
 			}]),
 			stepNumber: history.length,
-			xIsNext: !this.state.xIsNext
+			xIsNext: !this.state.xIsNext,
+			hoveringButtonIndex:false,
+			hoveringSquareIndex:false
 		});
 	}
-	
+
+	onSquareMouseEnter(i) {
+		for (let index = 0; index < this.state.history.length; index ++) {
+
+			if (this.state.history[index].squares[i] != null) {
+				this.setState({hoveringButtonIndex:index});
+				return;
+			}
+
+
+		};
+
+
+	}
+	onSquareMouseLeave(i) {
+
+		this.setState({hoveringButtonIndex:false});
+	}
+
+	onButtonMouseEnter(i) {
+
+		if (i < 1) {
+			return;
+		}
+
+		for (let index = 0; index < this.state.history[i].squares.length; index ++) {
+			if (this.state.history[i - 1].squares[index] !== this.state.history[i ].squares[index]) {
+				//if a square in the last state had nothing but the current state has the same square filled, that square was added in this state.
+				this.setState({hoveringSquareIndex:index});
+				return;
+
+			}
+		}
+
+
+
+	}
+	onButtonMouseLeave(i) {
+
+		this.setState({hoveringSquareIndex:false});
+	}
+
+
 	render() {
 		const history = this.state.history;
 		const current = history[this.state.stepNumber];
@@ -99,7 +148,12 @@ class Game extends React.Component {
 				'Go to game start';
 			return (
 				<li key={move}>
-					<button onClick={() => this.jumpTo(move)}>{desc}</button>
+					<button
+						onClick={() => this.jumpTo(move)}
+						className={move === (this.state.hoveringButtonIndex) ? "hover" : ""}
+						onMouseEnter={() => this.onButtonMouseEnter(move)}
+						onMouseLeave={() => this.onButtonMouseLeave(move)}
+					>{desc}</button>
 				</li>
 			);
 		});
@@ -117,6 +171,9 @@ class Game extends React.Component {
 					<Board
 						squares={current.squares}
 						onClick={(i) => this.handleClick(i)}
+						onSquareMouseEnter={(i) => this.onSquareMouseEnter(i)}
+						onSquareMouseLeave={(i) => this.onSquareMouseLeave(i)}
+						hoveringSquareIndex={this.state.hoveringSquareIndex}
 					/>
 				</div>
 				<div className="game-info">
