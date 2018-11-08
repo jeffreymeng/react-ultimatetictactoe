@@ -1,6 +1,12 @@
+html,body {
+	height:100%;
+	margin:0;
+}
 body {
 	font: 14px "Century Gothic", Futura, sans-serif;
-	margin: 20px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 ol, ul {
@@ -43,6 +49,12 @@ ol, ul {
 .game {
 	display: flex;
 	flex-direction: row;
+}
+
+.game-board {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 }
 
 .game-info {
